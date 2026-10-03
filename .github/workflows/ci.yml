@@ -1,0 +1,19 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    concurrency: deploy
+    steps:
+      - name: Pull & restart
+        working-directory: /home/docker/sumsub_bot/web_binance_bypass
+        run: |
+          git pull --ff-only origin main
+          docker compose up -d --build --remove-orphans
+          docker compose restart
+          docker image prune -f

@@ -1,0 +1,11 @@
+work_dir/logs/*.log
+!work_dir/logs/.gitkeep
+test*.py
+venv/
+.idea/*
+__pycache__/
+*.pyc
+.env
+.DS_Store
+*.db
+*.json

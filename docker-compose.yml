@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  binance_bypass_service:
+    build:
+      context: .
+      dockerfile: image/Dockerfile
+    env_file: .env
+    environment:
+      DB_NAME: ${POSTGRES_DB}
+      DB_HOST: ${POSTGRES_HOST}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      API_AUTH_TOKEN: ${API_AUTH_TOKEN}
+    volumes:
+      - ./work_dir/logs:/logs:rw
+      - ./work_dir/code:/code:rw
+    command: sh -c "gunicorn run:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8012 --timeout 60"
+    expose:
+      - "8012"
+    networks:
+      - proxy-net
+    restart: always
+
+networks:
+  proxy-net:
+    external: true
