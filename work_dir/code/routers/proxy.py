@@ -11,7 +11,7 @@ import httpx
 from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import Response
 
-from db.queries import get_proxy_for_sub
+from db.queries import get_proxy_for_sub, get_proxy_for_exchange_sub
 from chrome.client import ChromeRetryClient
 
 try:
@@ -350,7 +350,6 @@ def _patch_waf_token_domain(body: bytes, new_domain: str) -> bytes:
 @router.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def proxy_http(path: str, request: Request):
     """Проксирование HTTP-запросов к целевому микросервису."""
-    logger.info(f"Proxying HTTP request: {request.method} {request.url}")
     sub = request.url.hostname.split(".")[0]
     query = request.url.query
     proxy_host = request.headers.get("host", request.url.netloc)
@@ -393,7 +392,7 @@ async def proxy_http(path: str, request: Request):
         # Токен-сервис возвращает 502 на «голые» пути с egress-IP —
         # подстраховываемся dummy-запросом (неизвестные параметры игнорируются)
         target_url += "?cb=1"
-    http_proxy = await get_proxy_for_sub(str(sub))
+    http_proxy = await get_proxy_for_exchange_sub(sub=str(sub), exchange="binance")
 
     # bnbstatic (CDN-статика) не зависит от IP-адреса: отдаём её напрямую
     # (быстрый datacenter-егресс), а не через медленный residential-прокси —
