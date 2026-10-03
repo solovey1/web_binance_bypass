@@ -392,7 +392,7 @@ async def proxy_http(path: str, request: Request):
         # Токен-сервис возвращает 502 на «голые» пути с egress-IP —
         # подстраховываемся dummy-запросом (неизвестные параметры игнорируются)
         target_url += "?cb=1"
-    http_proxy = await get_proxy_for_exchange_sub(sub=str(sub), exchange="binance")
+    http_proxy = await get_proxy_for_exchange_sub(sub=str(sub), service="binance")
 
     # bnbstatic (CDN-статика) не зависит от IP-адреса: отдаём её напрямую
     # (быстрый datacenter-егресс), а не через медленный residential-прокси —
